@@ -1,6 +1,7 @@
-import 'package:favourite_places/models/place.dart';
+import 'dart:io';
+
+import 'package:favourite_places/components/image_input.dart';
 import 'package:favourite_places/provider/place_provider.dart';
-import 'package:favourite_places/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,6 +14,7 @@ class NewPlace extends ConsumerStatefulWidget {
 
 class _NewPlaceState extends ConsumerState<NewPlace> {
   final TextEditingController _place = TextEditingController();
+  File? _pickedImage;
 
   @override
   void dispose() {
@@ -26,28 +28,40 @@ class _NewPlaceState extends ConsumerState<NewPlace> {
       appBar: AppBar(
         title: const Text("Add a place"),
       ),
-      body: Column(
-        children: [
-          TextField(
-            decoration: const InputDecoration(label: Text("Title")),
-            controller: _place,
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          ElevatedButton.icon(
-            onPressed: () {
-              if (_place.text.isEmpty) {
-                return;
-              }
-              ref.read(placeProvider.notifier).addNewPlace(_place.text);
-              Navigator.pop(context);
-            },
-            label: const Text("Add place"),
-            icon: const Icon(Icons.add),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(label: Text("Title")),
+              controller: _place,
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ImageInput(
+              pickedImage: (image) {
+                _pickedImage = image!;
+              },
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                if (_place.text.isEmpty || _pickedImage == null) {
+                  return;
+                }
+                ref
+                    .read(placeProvider.notifier)
+                    .addNewPlace(_place.text, _pickedImage!);
+                Navigator.pop(context);
+              },
+              label: const Text("Add place"),
+              icon: const Icon(Icons.add),
+            ),
+          ],
+        ),
       ),
     );
   }

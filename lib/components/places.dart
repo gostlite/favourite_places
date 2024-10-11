@@ -19,21 +19,24 @@ class Places extends StatelessWidget {
                   .copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
           )
-        : ListView.builder(
-            itemCount: places.length,
-            itemBuilder: (context, index) {
-              final place = places[index];
-              return InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) {
-                        return PlacesDetailsScreen(
-                          place: place,
+        : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+                itemCount: places.length,
+                itemBuilder: (context, index) {
+                  final place = places[index];
+                  return InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) {
+                            return PlacesDetailsScreen(
+                              place: place,
+                            );
+                          }),
                         );
-                      }),
-                    );
-                  },
-                  child: PlaceTile(place: place));
-            });
+                      },
+                      child: PlaceTile(place: place));
+                }),
+          );
   }
 }

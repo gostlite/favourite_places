@@ -11,6 +11,13 @@ class PlaceTile extends StatelessWidget {
         backgroundImage: FileImage(place.image),
         radius: 25,
       ),
+      subtitle: Text(
+        place.placeLocation.address,
+        style: Theme.of(context)
+            .textTheme
+            .bodySmall!
+            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+      ),
       title: Text(place.title,
           style: Theme.of(context)
               .textTheme

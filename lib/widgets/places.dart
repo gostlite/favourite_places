@@ -1,4 +1,4 @@
-import 'package:favourite_places/components/place_tile.dart';
+import 'package:favourite_places/widgets/place_tile.dart';
 import 'package:favourite_places/models/place.dart';
 import 'package:favourite_places/screens/places_details_screen.dart';
 import 'package:flutter/material.dart';

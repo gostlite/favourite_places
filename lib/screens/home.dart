@@ -1,5 +1,5 @@
-import 'package:favourite_places/components/place_tile.dart';
-import 'package:favourite_places/components/places.dart';
+import 'package:favourite_places/widgets/place_tile.dart';
+import 'package:favourite_places/widgets/places.dart';
 import 'package:favourite_places/provider/place_provider.dart';
 import 'package:favourite_places/screens/new_place.dart';
 import 'package:flutter/material.dart';

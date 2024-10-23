@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:favourite_places/models/place.dart';
+import 'package:favourite_places/screens/map.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import "package:http/http.dart" as http;
 
@@ -17,6 +19,27 @@ class _LocationInputState extends State<LocationInput> {
   PlaceLocation? _pickedLocation;
   bool _isGettingLocation = false;
   Location location = Location();
+
+  Future<void> _saveLocation(double lat, double lng) async {
+    final url = Uri.parse(
+        "https://geocode.maps.co/reverse?lat=$lat&lon=$lng&api_key=670afe13c0f61190453840hcd67f8ee");
+    final response = await http.get(url);
+    final rspData = json.decode(response.body);
+    final address =
+        "${rspData["address"]['building']} ${rspData["address"]['road']}, ${rspData["address"]['state']}, ${rspData["address"]['country_code']}";
+    // print(address);
+
+    setState(() {
+      _pickedLocation =
+          PlaceLocation(longitude: lng, latitude: lat, address: address);
+      _isGettingLocation = false;
+    });
+    widget.pickLocation(_pickedLocation!);
+
+    // print(locationData.latitude);
+    // print(locationData.longitude);
+  }
+
   void _getCurrentLocation() async {
     Location location = Location();
 
@@ -49,23 +72,7 @@ class _LocationInputState extends State<LocationInput> {
     if (lat == null || lng == null) {
       return;
     }
-    final url = Uri.parse(
-        "https://geocode.maps.co/reverse?lat=$lat&lon=$lng&api_key=670afe13c0f61190453840hcd67f8ee");
-    final response = await http.get(url);
-    final rspData = json.decode(response.body);
-    final address =
-        "${rspData["address"]['building']} ${rspData["address"]['road']}, ${rspData["address"]['state']}, ${rspData["address"]['country_code']}";
-    print(address);
-
-    setState(() {
-      _pickedLocation =
-          PlaceLocation(longitude: lng, latitude: lat, address: address);
-      _isGettingLocation = false;
-    });
-    widget.pickLocation(_pickedLocation!);
-
-    // print(locationData.latitude);
-    // print(locationData.longitude);
+    _saveLocation(lat, lng);
   }
 
   String get locationImage {
@@ -76,6 +83,15 @@ class _LocationInputState extends State<LocationInput> {
     final lat = _pickedLocation!.latitude;
     final lng = _pickedLocation!.longitude;
     return "https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=600&height=400&center=lonlat:$lng,$lat&zoom=11.5617&scaleFactor=2&apiKey=62fa5664709346f1a1ddfed3094a4463";
+  }
+
+  void _locationSelected() async {
+    final pickedLocation = await Navigator.of(context)
+        .push<LatLng>(MaterialPageRoute(builder: (ctx) => const MapScreen()));
+    if (pickedLocation == null) {
+      return;
+    }
+    _saveLocation(pickedLocation.latitude, pickedLocation.longitude);
   }
 
   @override
@@ -123,7 +139,7 @@ class _LocationInputState extends State<LocationInput> {
             ),
             TextButton.icon(
               icon: const Icon(Icons.map),
-              onPressed: () {},
+              onPressed: _locationSelected,
               label: const Text("Select on map"),
             ),
           ],
